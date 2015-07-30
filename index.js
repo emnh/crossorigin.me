@@ -9,7 +9,7 @@ var favicon = fs.readFileSync('favicon.ico');
 var port = process.env.PORT || 8080;
 
 var copyHeaders = ['Date', 'Last-Modified', 'Expires', 'Cache-Control', 'Pragma', 'Content-Length', 'Content-Type'];
-var copyClientHeaders = ['If-Modified-Since'];
+var copyClientHeaders = ['If-Modified-Since', 'If-None-Match'];
 
 var server = http.createServer(function (req, res) {
   var d = domain.create();
@@ -56,7 +56,7 @@ function handler(req, res) {
         res.setTimeout(25000);
         res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString()); // one day in the future
         if (req.headers['If-Modified-Since'.toLowerCase()]) {
-          console.log("If-Modified-Since", req.headers['if-modified-since']);
+          // console.log("If-Modified-Since", req.headers['if-modified-since']);
           res.writeHead(304);
           res.setHeader('Access-Control-Allow-Origin', '*');
           res.setHeader('Access-Control-Allow-Credentials', false);
@@ -71,7 +71,7 @@ function handler(req, res) {
         for (var i=0; i < copyClientHeaders.length; i++) {
           var clientHeader = req.headers[copyClientHeaders[i].toLowerCase()];
           if (clientHeader) {
-            headers[copyHeaders[i]] = clientHeader;
+            headers[copyClientHeaders[i]] = clientHeader;
           }
         }
         var options = {
@@ -86,10 +86,8 @@ function handler(req, res) {
           res.setHeader('Access-Control-Allow-Origin', '*');
           res.setHeader('Access-Control-Allow-Credentials', false);
           res.setHeader('Access-Control-Allow-Headers', 'Content-Type,If-None-Match,If-Modified-Since,' + copyHeaders.join());
-          var lastModified = response.headers['date'];
-          if (lastModified) {
-            res.setHeader('Last-Modified', lastModified);
-          }
+          var lastModified = new Date(Date.now() + 86400000).toUTCString()
+          res.setHeader('Last-Modified', lastModified);
           for (var i=0; i<copyHeaders.length; i++) {
             var responseHeader = response.headers[copyHeaders[i].toLowerCase()];
             if (responseHeader) {
