@@ -12,49 +12,49 @@ var copyHeaders = ['Date', 'Last-Modified', 'Expires', 'Cache-Control', 'Pragma'
 var copyClientHeaders = ['If-Modified-Since'];
 
 var server = http.createServer(function (req, res) {
-	var d = domain.create();
-	d.on('error', function (e){
-		console.log('ERROR', e.stack);
+  var d = domain.create();
+  d.on('error', function (e){
+    console.log('ERROR', e.stack);
 
-		res.statusCode = 500;
-		res.end('Error: ' + ((e instanceof TypeError) ? "make sure your URL is correct" : String(e)));
-	});
+    res.statusCode = 500;
+    res.end('Error: ' + ((e instanceof TypeError) ? "make sure your URL is correct" : String(e)));
+  });
 
-	d.add(req);
-	d.add(res);
+  d.add(req);
+  d.add(res);
 
-	d.run(function() {
-		handler(req, res);
-	});
+  d.run(function() {
+    handler(req, res);
+  });
 
 }).listen(port);
 
 
 function handler(req, res) {
-	console.log(req.url);
-	switch (req.url) {
-		case "/":
-			res.writeHead(200);
-			res.write(index);
-			res.end();
-			break;
-		case "/index.html":
-			res.writeHead(200);
-			res.write(index);
-			res.end();
-			break;
-		case "/favicon.ico":
-			res.writeHead(200);
-			res.write(favicon);
-			res.end();
+  console.log(req.url);
+  switch (req.url) {
+    case "/":
+      res.writeHead(200);
+      res.write(index);
+      res.end();
       break;
-		default:
-			if (req.url.indexOf('vivastreet') > -1){
-				res.end('tempbanned');
-			} else {
-			try {
-				res.setTimeout(25000);
-				res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString()); // one day in the future
+    case "/index.html":
+      res.writeHead(200);
+      res.write(index);
+      res.end();
+      break;
+    case "/favicon.ico":
+      res.writeHead(200);
+      res.write(favicon);
+      res.end();
+      break;
+    default:
+      if (req.url.indexOf('vivastreet') > -1){
+        res.end('tempbanned');
+      } else {
+      try {
+        res.setTimeout(25000);
+        res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString()); // one day in the future
         if (req.headers['If-Modified-Since'.toLowerCase()]) {
           console.log("If-Modified-Since", req.headers['if-modified-since']);
           res.writeHead(304);
@@ -78,11 +78,11 @@ function handler(req, res) {
           url: req.url.slice(1),
           headers: headers
         };
-				var r = request(options);
-				r.pipefilter = function(response, dest) {
-					for (var header in response.headers) {
-						dest.removeHeader(header);
-					}
+        var r = request(options);
+        r.pipefilter = function(response, dest) {
+          for (var header in response.headers) {
+            dest.removeHeader(header);
+          }
           res.setHeader('Access-Control-Allow-Origin', '*');
           res.setHeader('Access-Control-Allow-Credentials', false);
           res.setHeader('Access-Control-Allow-Headers', 'Content-Type,If-None-Match,If-Modified-Since,' + copyHeaders.join());
@@ -90,17 +90,17 @@ function handler(req, res) {
           if (lastModified) {
             res.setHeader('Last-Modified', lastModified);
           }
-					for (var i=0; i<copyHeaders.length; i++) {
-						var responseHeader = response.headers[copyHeaders[i].toLowerCase()];
-						if (responseHeader) {
-							res.setHeader(copyHeaders[i], responseHeader);
-						}
-					}
-				};
-				r.pipe(res);
-			} catch (e) {
-				res.end('Error: ' +  ((e instanceof TypeError) ? "make sure your URL is correct" : String(e)));
-			}
-		}
-	}
+          for (var i=0; i<copyHeaders.length; i++) {
+            var responseHeader = response.headers[copyHeaders[i].toLowerCase()];
+            if (responseHeader) {
+              res.setHeader(copyHeaders[i], responseHeader);
+            }
+          }
+        };
+        r.pipe(res);
+      } catch (e) {
+        res.end('Error: ' +  ((e instanceof TypeError) ? "make sure your URL is correct" : String(e)));
+      }
+    }
+  }
 }
