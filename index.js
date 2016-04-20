@@ -11,6 +11,12 @@ var port = process.env.PORT || 8080;
 var copyHeaders = ['Date', 'Last-Modified', 'Expires', 'Cache-Control', 'Pragma', 'Content-Length', 'Content-Type'];
 var copyClientHeaders = ['If-Modified-Since', 'If-None-Match'];
 
+process.on('uncaughtException',function(err){
+      console.log('#########');
+          console.log(err);
+              throw err;
+});
+
 var server = http.createServer(function (req, res) {
   var d = domain.create();
   d.on('error', function (e){
