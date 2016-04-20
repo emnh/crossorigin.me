@@ -3,8 +3,8 @@
   "description": "Proxy to access resources that lack the Access-Control-Allow-Origin * header",
   "version": "0.0.1",
   "author": {
-    "name": "technoboy10",
-    "email": "npm@tekhne-blog.appspotmail.com"
+    "name": "emnh",
+    "email": "hvidevold@gmail.com"
   },
   "license": "MIT",
   "dependencies": {
