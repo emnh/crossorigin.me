@@ -5,6 +5,7 @@ var fs = require('fs');
 var domain = require('domain');
 var index = fs.readFileSync('index.html');
 var favicon = fs.readFileSync('favicon.ico');
+var favicon2 = fs.readFileSync('favicon.png');
 
 var port = process.env.PORT || 8080;
 
@@ -52,6 +53,11 @@ function handler(req, res) {
     case "/favicon.ico":
       res.writeHead(200);
       res.write(favicon);
+      res.end();
+      break;
+    case "/favicon.png":
+      res.writeHead(200);
+      res.write(favicon2);
       res.end();
       break;
     default:
